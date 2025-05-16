@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block content %}
+<main class="container py-5">
+    <!-- Заголовок с декоративными элементами -->
+    <div class="text-center mb-5 position-relative">
+        <h1 class="display-4 fw-bold text-primary mb-3">Наши авторы</h1>
+        <div class="position-absolute top-50 start-0 end-0 border-top border-2 border-primary" style="z-index: -1;"></div>
+        <span class="bg-white px-4" style="position: relative; z-index: 1;">
+            <i class="bi bi-pen text-muted fs-1"></i>
+        </span>
+    </div>
+
+    <!-- Список авторов -->
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for author in authors %}
+        <div class="col">
+            <div class="card author-card h-100 border-0 shadow-sm hover-shadow-lg transition-all">
+                <!-- Портрет автора с эффектом при наведении -->
+                <div class="portrait-wrapper position-relative overflow-hidden">
+                    <img src="{{ url_for('static', filename='authors/' + author.portrait) }}"
+                         class="card-img-top portrait-img"
+                         alt="Портрет {{ author.fullname }}">
+                    <div class="portrait-overlay d-flex align-items-center justify-content-center">
+                        <a href="/authors/{{ author.author_id }}" class="btn btn-light btn-lg rounded-pill px-4">
+                            <i class="bi bi-eye me-2"></i>Подробнее
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Информация об авторе -->
+                <div class="card-body text-center pb-4">
+                    <h3 class="card-title mb-3">{{ author.fullname }}</h3>
+
+                    <!-- Дополнительная информация -->
+                    <div class="d-flex justify-content-center flex-wrap gap-2 mb-3">
+
+                        {% if author.birthday %}
+                        <span class="badge bg-info bg-opacity-10 text-info py-2 px-3">
+                            <i class="bi bi-balloon me-1"></i> {{ author.birthday }}
+                        </span>
+                        {% endif %}
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Пагинация (если нужно) -->
+    {% if pagination %}
+    <nav class="mt-5" aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            {% if pagination.has_prev %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ pagination.prev_num }}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            {% endif %}
+
+            {% for page in pagination.iter_pages() %}
+            <li class="page-item {% if page == pagination.page %}active{% endif %}">
+                <a class="page-link" href="?page={{ page }}">{{ page }}</a>
+            </li>
+            {% endfor %}
+
+            {% if pagination.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ pagination.next_num }}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</main>
+
+<style>
+    /* Стили для карточек авторов */
+    .author-card {
+        border-radius: 1rem;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .author-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .portrait-wrapper {
+        height: 280px;
+        border-radius: 1rem 1rem 0 0;
+    }
+
+    .portrait-img {
+        height: 100%;
+        width: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+
+    .author-card:hover .portrait-img {
+        transform: scale(1.05);
+    }
+
+    .portrait-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        border-radius: 1rem 1rem 0 0;
+    }
+
+    .author-card:hover .portrait-overlay {
+        opacity: 1;
+    }
+
+    .hover-shadow-lg {
+        box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.1);
+    }
+
+    .hover-shadow-lg:hover {
+        box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.15);
+    }
+
+    .transition-all {
+        transition: all 0.3s ease;
+    }
+</style>
+{% endblock %}

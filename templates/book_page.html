@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block content %}
+<main class="container my-5">
+    <div class="row">
+        <!-- Блок с обложкой и основной информацией -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm">
+                <img src="{{ url_for('static', filename='books/' + book.cover) }}" 
+                     class="card-img-top" alt="Обложка книги {{ book.title }}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ book.title }}</h5>
+                    <p class="card-text">Автор: <a href="/authors/{{ book.author_id }}">{{ book.author.fullname }}</a></p>
+                    <p class="card-text">Жанр: <a href="/genres/{{ book.genre_id }}">{{ book.genre.title }}</a></p>
+                    <p class="card-text">Страниц: {{ book.pages }}</p>
+                    {% if book.year %}
+                    <p class="card-text">Год издания: {{ book.year }}</p>
+                    {% endif %}
+                    <div class="d-grid gap-2">
+                        {% if book.content_address %}
+                        <a href="{{ url_for('static', filename='books_content/' + book.content_address) }}"
+                           class="btn btn-primary" target="_blank">Читать онлайн</a>
+                        <a href="{{ url_for('static', filename='books_content/' + book.content_address) }}"
+                           class="btn btn-outline-secondary" download>Скачать</a>
+                        {% else %}
+                        <button class="btn btn-secondary" disabled>Чтение недоступно</button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Блок с описанием и дополнительной информацией -->
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h4 class="card-title mb-4">Описание</h4>
+                    <p class="card-text">{{ book.discription }}</p>
+
+                    <hr class="my-4">
+
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-sm btn-outline-secondary">
+                                <i class="bi bi-heart"></i> Нравится ({{ book.how_many_like or 0 }})
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary">
+                                <i class="bi bi-chat-left-text"></i> Оставить отзыв
+                            </button>
+                        </div>
+                        {% if current_user.is_authenticated and book.books_progresses %}
+                        <div class="progress" style="width: 150px; height: 20px;">
+                            {% set progress = book.books_progresses|selectattr('user_id', 'equalto', current_user.id)|first %}
+                            <div class="progress-bar" role="progressbar"
+                                 style="width: {{ progress.progress_percentage }}%"
+                                 aria-valuenow="{{ progress.progress_percentage }}"
+                                 aria-valuemin="0"
+                                 aria-valuemax="100">
+                                {{ progress.progress_percentage }}%
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Блок с похожими книгами -->
+            {% if similar_books %}
+            <div class="card shadow-sm mt-4">
+                <div class="card-body">
+                    <h5 class="card-title">Похожие книги</h5>
+                    <div class="row">
+                        {% for similar_book in similar_books %}
+                        <div class="col-sm-6 col-md-4 mb-3">
+                            <div class="card h-100">
+                                <img src="{{ url_for('static', filename='books/' + similar_book.cover) }}"
+                                     class="card-img-top" alt="Обложка" style="height: 150px; object-fit: cover;">
+                                <div class="card-body">
+                                    <h6 class="card-title">{{ similar_book.title }}</h6>
+                                    <p class="card-text small">{{ similar_book.author.fullname }}</p>
+                                    <a href="{{ url_for('book', book_id=similar_book.book_id) }}"
+                                       class="btn btn-sm btn-outline-primary">Подробнее</a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</main>
+{% endblock %}

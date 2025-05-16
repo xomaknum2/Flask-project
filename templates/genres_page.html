@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block content %}
+<main class="container py-5">
+    <!-- Заголовок с декоративными элементами -->
+    <div class="text-center mb-5 position-relative">
+        <h1 class="display-4 fw-bold text-primary mb-3">Жанры произведений</h1>
+        <div class="position-absolute top-50 start-0 end-0 border-top border-2 border-primary" style="z-index: -1;"></div>
+        <span class="bg-white px-4" style="position: relative; z-index: 1;">
+            <i class="bi bi-tags text-muted fs-1"></i>
+        </span>
+    </div>
+
+    <!-- Сетка жанров -->
+    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-4">
+        {% for genre in genres %}
+        <div class="col">
+            <div class="card genre-card h-100 border-0 shadow-sm hover-shadow transition-all text-center">
+                <div class="card-body p-4 d-flex flex-column justify-content-between">
+                    <div class="genre-icon mb-3">
+                        <i class="bi bi-bookmark-star-fill fs-1" style="color: {{ ['#6f42c1', '#fd7e14', '#20c997', '#0dcaf0', '#ffc107', '#dc3545', '#198754'] | random }}"></i>
+                    </div>
+                    <h3 class="card-title h5 mb-3">{{ genre.title }}</h3>
+                    <a href="/genres/{{ genre.genre_id }}"
+                       class="btn btn-outline-primary btn-sm stretched-link">
+                        Узнать больше
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Статистика -->
+    <div class="card border-0 shadow-sm mt-5">
+        <div class="card-body text-center py-4">
+            <h2 class="h4 mb-3">Всего жанров в нашей библиотеке</h2>
+            <span class="display-4 fw-bold text-primary">{{ genres|length }}</span>
+        </div>
+    </div>
+</main>
+
+<style>
+    /* Стили для карточек жанров */
+    .genre-card {
+        border-radius: 0.75rem;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        background: linear-gradient(to bottom, #f8f9fa, #ffffff);
+    }
+
+    .genre-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.1) !important;
+    }
+
+    .genre-icon {
+        transition: transform 0.3s ease;
+    }
+
+    .genre-card:hover .genre-icon {
+        transform: scale(1.2);
+    }
+
+    .transition-all {
+        transition: all 0.3s ease;
+    }
+</style>
+{% endblock %}
